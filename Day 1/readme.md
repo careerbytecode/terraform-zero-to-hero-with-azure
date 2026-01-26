@@ -133,4 +133,7 @@ Run this to confirm everything installed correctly:
 ```bash
 terraform -version && az version
 ```
+Output:
+![terraform & Azure version output](https://github.com/CloudByVenkat/terraform-zero-to-hero-with-azure/blob/main/images/terraform-azure-version.png)
+
 If you see both outputs → 🎉 You're ready for Day 2!
