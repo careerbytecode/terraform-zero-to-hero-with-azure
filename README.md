@@ -1,4 +1,4 @@
-# 👋 Hi, I'm ** Venkat (Subbareddy Vundela)**
+# 👋 Hi, I'm Venkat (**Subbareddy Vundela**)
 
 ### 🚀 **Cloud Solution Architect — Azure | Terraform | Kubernetes | Ansible | Azure DevOps | Storage SME**
 
