@@ -70,10 +70,11 @@ terraform {
   }
 }
 provider "azurerm" {
+  subscription_id = "19644874-3e1c-4f4a-8d5f-2901769bf6a7"
   features {}
 }
-resource "azurerm_resource_group" "rg_demo_day3" {
-  name     = "rg-demo-day3"
+resource "azurerm_resource_group" "rg_storage_stag_eastus_001" {
+  name     = "rg-storage-stag-eastus-001"
   location = "eastus"
 }
 ```
@@ -107,26 +108,9 @@ cloudbyvenkat@cloudbyvenkat:~/terraform-zero-to-hero/DAY3$
 ```
 Validate Syntax:
 ```bash
-cloudbyvenkat@cloudbyvenkat:~/terraform-zero-to-hero/DAY3$ terraform init
-Initializing the backend...
-Initializing provider plugins...
-- Finding hashicorp/azurerm versions matching "4.58.0"...
-- Installing hashicorp/azurerm v4.58.0...
-- Installed hashicorp/azurerm v4.58.0 (signed by HashiCorp)
-Terraform has created a lock file .terraform.lock.hcl to record the provider
-selections it made above. Include this file in your version control repository
-so that Terraform can guarantee to make the same selections by default when
-you run "terraform init" in the future.
+cloudbyvenkat@cloudbyvenkat:~/terraform-zero-to-hero/DAY3$ terraform validate
+Success! The configuration is valid.
 
-Terraform has been successfully initialized!
-
-You may now begin working with Terraform. Try running "terraform plan" to see
-any changes that are required for your infrastructure. All Terraform commands
-should now work.
-
-If you ever set or change modules or backend configuration for Terraform,
-rerun this command to reinitialize your working directory. If you forget, other
-commands will detect it and remind you to do so if necessary.
 cloudbyvenkat@cloudbyvenkat:~/terraform-zero-to-hero/DAY3$
 ```
 Preview (dry run):
@@ -138,16 +122,16 @@ Terraform used the selected providers to generate the following execution plan. 
 
 Terraform will perform the following actions:
 
-  # azurerm_resource_group.rg_demo_day3 will be created
-  + resource "azurerm_resource_group" "rg_demo_day3" {
+  # azurerm_resource_group.rg_storage_stag_eastus_001 will be created
+  + resource "azurerm_resource_group" "rg_storage_stag_eastus_001" {
       + id       = (known after apply)
       + location = "eastus"
-      + name     = "rg-demo-day3"
+      + name     = "rg-storage-stag-eastus-001"
     }
 
 Plan: 1 to add, 0 to change, 0 to destroy.
 
-───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
 Saved the plan to: main.tfplan
 
@@ -158,10 +142,10 @@ cloudbyvenkat@cloudbyvenkat:~/terraform-zero-to-hero/DAY3$
 Apply deployment:
 ```bash
 cloudbyvenkat@cloudbyvenkat:~/terraform-zero-to-hero/DAY3$ terraform apply main.tfplan
-azurerm_resource_group.rg_demo_day3: Creating...
-azurerm_resource_group.rg_demo_day3: Still creating... [00m10s elapsed]
-azurerm_resource_group.rg_demo_day3: Still creating... [00m20s elapsed]
-azurerm_resource_group.rg_demo_day3: Creation complete after 26s [id=/subscriptions/19644874-3e1c-4f4a-8d5f-2901769bf6a7/resourceGroups/rg-demo-day3]
+azurerm_resource_group.rg_storage_stag_eastus_001: Creating...
+azurerm_resource_group.rg_storage_stag_eastus_001: Still creating... [00m10s elapsed]
+azurerm_resource_group.rg_storage_stag_eastus_001: Still creating... [00m20s elapsed]
+azurerm_resource_group.rg_storage_stag_eastus_001: Creation complete after 27s [id=/subscriptions/19644874-3e1c-4f4a-8d5f-2901769bf6a7/resourceGroups/rg-storage-stag-eastus-001]
 
 Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 cloudbyvenkat@cloudbyvenkat:~/terraform-zero-to-hero/DAY3$
@@ -171,29 +155,31 @@ After deployment:
 ```bash
 cloudbyvenkat@cloudbyvenkat:~/terraform-zero-to-hero/DAY3$ az group list --output table
 ```
-Expected output:
+Expected output: CLI
 ```bash
-Name                       Location       Status
--------------------------  -------------  ---------
-rg-demo-day3               eastus         Succeeded
+Name                        Location       Status
+--------------------------  -------------  ---------
+rg-storage-stag-eastus-001  eastus         Succeeded
+
 cloudbyvenkat@cloudbyvenkat:~/terraform-zero-to-hero/DAY3$
 ```
-
+Expected output: Azure Portal
+![rg]()
 Cleanup:
 ```json
 cloudbyvenkat@cloudbyvenkat:~/terraform-zero-to-hero/DAY3$ terraform destroy
-azurerm_resource_group.rg_demo_day3: Refreshing state... [id=/subscriptions/19644874-3e1c-4f4a-8d5f-2901769bf6a7/resourceGroups/rg-demo-day3]
+azurerm_resource_group.rg_storage_stag_eastus_001: Refreshing state... [id=/subscriptions/19644874-3e1c-4f4a-8d5f-2901769bf6a7/resourceGroups/rg-storage-stag-eastus-001]
 
 Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
   - destroy
 
 Terraform will perform the following actions:
 
-  # azurerm_resource_group.rg_demo_day3 will be destroyed
-  - resource "azurerm_resource_group" "rg_demo_day3" {
-      - id         = "/subscriptions/19644874-3e1c-4f4a-8d5f-2901769bf6a7/resourceGroups/rg-demo-day3" -> null
+  # azurerm_resource_group.rg_storage_stag_eastus_001 will be destroyed
+  - resource "azurerm_resource_group" "rg_storage_stag_eastus_001" {
+      - id         = "/subscriptions/19644874-3e1c-4f4a-8d5f-2901769bf6a7/resourceGroups/rg-storage-stag-eastus-001" -> null
       - location   = "eastus" -> null
-      - name       = "rg-demo-day3" -> null
+      - name       = "rg-storage-stag-eastus-001" -> null
       - tags       = {} -> null
         # (1 unchanged attribute hidden)
     }
@@ -204,15 +190,16 @@ Do you really want to destroy all resources?
   Terraform will destroy all your managed infrastructure, as shown above.
   There is no undo. Only 'yes' will be accepted to confirm.
 
-  Enter a value:
+  Enter a value: 
+
+cloudbyvenkat@cloudbyvenkat:~/terraform-zero-to-hero/DAY3$ 
 ```
 Enter the value as yes
 ```bash
-azurerm_resource_group.rg_demo_day3: Destroying... [id=/subscriptions/19644874-3e1c-4f4a-8d5f-2901769bf6a7/resourceGroups/rg-demo-day3]
-azurerm_resource_group.rg_demo_day3: Still destroying... [id=/subscriptions/19644874-3e1c-4f4a-8d5f-2901769bf6a7/resourceGroups/rg-demo-day3, 00m10s elapsed]
-azurerm_resource_group.rg_demo_day3: Still destroying... [id=/subscriptions/19644874-3e1c-4f4a-8d5f-2901769bf6a7/resourceGroups/rg-demo-day3, 00m20s elapsed]
-azurerm_resource_group.rg_demo_day3: Destruction complete after 23s
+azurerm_resource_group.rg_storage_stag_eastus_001: Destroying... [id=/subscriptions/19644874-3e1c-4f4a-8d5f-2901769bf6a7/resourceGroups/rg-storage-stag-eastus-001]
+azurerm_resource_group.rg_storage_stag_eastus_001: Still destroying... [id=/subscriptions/19644874-3e1c-4f4a-8d5f-...ourceGroups/rg-storage-stag-eastus-001, 00m10s elapsed]
+azurerm_resource_group.rg_storage_stag_eastus_001: Still destroying... [id=/subscriptions/19644874-3e1c-4f4a-8d5f-...ourceGroups/rg-storage-stag-eastus-001, 00m20s elapsed]
+azurerm_resource_group.rg_storage_stag_eastus_001: Destruction complete after 23s
 
 Destroy complete! Resources: 1 destroyed.
-cloudbyvenkat@cloudbyvenkat:~/terraform-zero-to-hero/DAY3$
 ```
