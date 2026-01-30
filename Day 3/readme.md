@@ -1,7 +1,7 @@
 # 🌍 Day 3 — Terraform Workflow + First Resource Deployment
 
 Today’s objective was to understand and test the basic Terraform workflow:
-**init → plan → apply → destroy**, as well as HCL syntax basics.
+**init → validate  →  plan → apply → destroy**, as well as HCL syntax basics.
 
 ---
 
@@ -164,7 +164,7 @@ rg-storage-stag-eastus-001  eastus         Succeeded
 cloudbyvenkat@cloudbyvenkat:~/terraform-zero-to-hero/DAY3$
 ```
 Expected output: Azure Portal
-![rg]()
+![rg](https://github.com/careerbytecode/terraform-zero-to-hero-with-azure/blob/main/images/rg.png)
 Cleanup:
 ```json
 cloudbyvenkat@cloudbyvenkat:~/terraform-zero-to-hero/DAY3$ terraform destroy
