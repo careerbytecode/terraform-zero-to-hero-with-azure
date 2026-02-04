@@ -48,3 +48,14 @@ Just by changing variables.
 ---
 
 ## 📁 Project Structure
+
+```
+day-6-variables-outputs/
+│
+├── main.tf
+├── variables.tf
+├── outputs.tf
+├── terraform.tfvars
+├── provider.tf
+└── README.md
+```
