@@ -1,0 +1,8 @@
+subscription_id = " "
+client_id       = " "
+client_secret   = " "
+tenant_id       = " "
+location        = "eastus"
+environment     = "staging"
+resource_group_name  = "rg-storage-stag-eastus-001"
+storage_account_name = "storagestageastus001"
