@@ -59,3 +59,33 @@ day-6-variables-outputs/
 ├── provider.tf
 └── README.md
 ```
+
+
+---
+
+## ⚙️ Variables Used
+
+| Name | Description | Example |
+|------|-------------|-----------|
+| project_name | Project identifier | tfzerohero |
+| environment | Environment name | staging |
+| location | Azure region | eastus |
+
+---
+
+## 📦 Example Code
+
+### variables.tf
+```hcl
+variable "project_name" {
+  type = string
+}
+
+variable "environment" {
+  type = string
+}
+
+variable "location" {
+  type = string
+}
+
