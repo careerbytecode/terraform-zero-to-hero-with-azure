@@ -50,10 +50,11 @@ Benefits:
 ```hcl
 terraform {
   backend "azurerm" {
-    resource_group_name  = "rg-tfstate"
-    storage_account_name = "tfstateprod"
-    container_name       = "state"
-    key                  = "day10.tfstate"
+    resource_group_name = "tfstatetfh"
+    storage_account_name = "tfstatetfh"
+    container_name = "tfstate"
+    key = "day10.tfstate"
+    
   }
 }
 ```
@@ -69,3 +70,4 @@ terraform apply
 ## 💡 Takeaway
 
 Infrastructure without state management is risky automation.
+
