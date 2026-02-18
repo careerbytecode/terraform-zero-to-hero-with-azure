@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Azure Infrastructure — Environment Comparison</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dev:   #00C9A7;
+    --stg:   #F7B731;
+    --prod:  #FF6B6B;
+    --bg:    #0A0E1A;
+    --card:  #111827;
+    --border:#1E2D45;
+    --text:  #E2E8F0;
+    --muted: #64748B;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    padding: 48px 24px;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,201,167,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,201,167,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    max-width: 960px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  .header .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--dev);
+    margin-bottom: 12px;
+    opacity: 0.8;
+  }
+
+  .header h1 {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 30%, var(--muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+
+  .header p {
+    color: var(--muted);
+    font-size: 14px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ENV CARDS ROW */
+  .env-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .env-card {
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid;
+    animation: fadeUp 0.5s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .env-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .env-card.dev   { border-color: rgba(0,201,167,0.25); background: rgba(0,201,167,0.04); animation-delay: 0.1s; }
+  .env-card.stg   { border-color: rgba(247,183,49,0.25); background: rgba(247,183,49,0.04); animation-delay: 0.2s; }
+  .env-card.prod  { border-color: rgba(255,107,107,0.25); background: rgba(255,107,107,0.04); animation-delay: 0.3s; }
+
+  .env-card.dev::before  { background: var(--dev); }
+  .env-card.stg::before  { background: var(--stg); }
+  .env-card.prod::before { background: var(--prod); }
+
+  .env-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  .dev  .env-badge { background: rgba(0,201,167,0.15);  color: var(--dev); }
+  .stg  .env-badge { background: rgba(247,183,49,0.15); color: var(--stg); }
+  .prod .env-badge { background: rgba(255,107,107,0.15); color: var(--prod); }
+
+  .env-cost {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .dev  .env-cost { color: var(--dev); }
+  .stg  .env-cost { color: var(--stg); }
+  .prod .env-cost { color: var(--prod); }
+
+  .env-cost-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* TABLE */
+  .table-wrap {
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    background: var(--card);
+    animation: fadeUp 0.6s ease 0.3s both;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead tr {
+    background: #0D1526;
+  }
+
+  th {
+    padding: 16px 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+    text-align: left;
+  }
+
+  th:first-child { color: var(--muted); }
+  th.dev-h  { color: var(--dev); }
+  th.stg-h  { color: var(--stg); }
+  th.prod-h { color: var(--prod); }
+
+  tbody tr {
+    border-top: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+  tbody tr.total-row {
+    background: rgba(255,255,255,0.03);
+    border-top: 2px solid var(--border);
+  }
+
+  td {
+    padding: 14px 20px;
+    font-size: 14px;
+    vertical-align: middle;
+  }
+
+  td:first-child {
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .total-row td:first-child {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  /* Pill values */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+  }
+
+  .pill.dev-pill  { background: rgba(0,201,167,0.10);  color: var(--dev);  border: 1px solid rgba(0,201,167,0.2); }
+  .pill.stg-pill  { background: rgba(247,183,49,0.10); color: var(--stg);  border: 1px solid rgba(247,183,49,0.2);}
+  .pill.prod-pill { background: rgba(255,107,107,0.10);color: var(--prod); border: 1px solid rgba(255,107,107,0.2);}
+
+  .pill .price {
+    font-size: 10px;
+    opacity: 0.7;
+  }
+
+  /* Boolean indicators */
+  .check, .cross {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    font-size: 13px;
+  }
+
+  .check { background: rgba(0,201,167,0.12); color: var(--dev); }
+  .cross  { background: rgba(100,116,139,0.12); color: var(--muted); }
+
+  /* Total row pills */
+  .total-pill {
+    font-size: 16px;
+    font-weight: 800;
+    font-family: 'Syne', sans-serif;
+  }
+
+  .total-pill.dev-pill  { font-size: 15px; }
+  .total-pill.stg-pill  { font-size: 15px; }
+  .total-pill.prod-pill { font-size: 15px; }
+
+  /* Plain text values */
+  .plain {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    animation: fadeUp 0.6s ease 0.5s both;
+  }
+
+  .footer-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .footer-note span {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--dev);
+    animation: pulse 2s infinite;
+  }
+
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+  }
+
+  .legend-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .env-cards { grid-template-columns: 1fr; }
+    td, th { padding: 10px 12px; }
+    .pill { font-size: 11px; padding: 3px 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="eyebrow">☁ terraform · azure · day 16</div>
+    <h1>Environment Infrastructure<br>Comparison</h1>
+    <p>// dev · staging · production</p>
+  </div>
+
+  <!-- Cost Summary Cards -->
+  <div class="env-cards">
+    <div class="env-card dev">
+      <div class="env-badge">Dev</div>
+      <div class="env-cost">~$25</div>
+      <div class="env-cost-label">/ month · minimal setup</div>
+    </div>
+    <div class="env-card stg">
+      <div class="env-badge">Staging</div>
+      <div class="env-cost">~$120</div>
+      <div class="env-cost-label">/ month · balanced setup</div>
+    </div>
+    <div class="env-card prod">
+      <div class="env-badge">Production</div>
+      <div class="env-cost">~$300</div>
+      <div class="env-cost-label">/ month · full redundancy</div>
+    </div>
+  </div>
+
+  <!-- Comparison Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Resource</th>
+          <th class="dev-h">Dev</th>
+          <th class="stg-h">Staging</th>
+          <th class="prod-h">Production</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>App Service</td>
+          <td><span class="pill dev-pill">B1 <span class="price">$13/mo</span></span></td>
+          <td><span class="pill stg-pill">S1 <span class="price">$70/mo</span></span></td>
+          <td><span class="pill prod-pill">P1v2 <span class="price">$150/mo</span></span></td>
+        </tr>
+        <tr>
+          <td>Database</td>
+          <td><span class="pill dev-pill">Basic <span class="price">$5/mo</span></span></td>
+          <td><span class="pill stg-pill">S0 <span class="price">$15/mo</span></span></td>
+          <td><span class="pill prod-pill">S3 <span class="price">$100/mo</span></span></td>
+        </tr>
+        <tr>
+          <td>Storage</td>
+          <td><span class="plain">LRS</span></td>
+          <td><span class="plain">LRS</span></td>
+          <td><span class="plain">GRS</span></td>
+        </tr>
+        <tr>
+          <td>Log Retention</td>
+          <td><span class="plain">30 days</span></td>
+          <td><span class="plain">60 days</span></td>
+          <td><span class="plain">90 days</span></td>
+        </tr>
+        <tr>
+          <td>Log Analytics</td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Always On</td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr>
+          <td>Zone Redundancy</td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="cross">✕</span></td>
+          <td><span class="check">✓</span></td>
+        </tr>
+        <tr class="total-row">
+          <td>Total Cost</td>
+          <td><span class="pill dev-pill total-pill">~$25/mo</span></td>
+          <td><span class="pill stg-pill total-pill">~$120/mo</span></td>
+          <td><span class="pill prod-pill total-pill">~$300/mo</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-note">
+      <span></span> 30-Day Terraform on Azure Challenge — Zero to Hero
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--dev)"></div> Dev</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--stg)"></div> Staging</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--prod)"></div> Production</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
